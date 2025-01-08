@@ -1,0 +1,8 @@
+[package]
+name = "rabbitmqtest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+lapin = "2.5.0"
+tokio = {version="1.42.0", features=["full"]}
