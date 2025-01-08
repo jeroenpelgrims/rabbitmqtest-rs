@@ -1,5 +1,7 @@
 use std::fmt;
 
+use serde::{Deserialize, Serialize};
+
 pub enum BoardgameSite {
     Spelonk,
     ThePlayground,
@@ -13,4 +15,15 @@ impl fmt::Display for BoardgameSite {
         };
         write!(f, "{}", site_str)
     }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Message {
+    pub msg_type: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct DiscoverMessage {
+    pub msg_type: String,
+    pub foo: String,
 }

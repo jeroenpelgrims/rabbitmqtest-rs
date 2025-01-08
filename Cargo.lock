@@ -1280,6 +1280,8 @@ name = "rabbitmqtest"
 version = "0.1.0"
 dependencies = [
  "lapin",
+ "serde",
+ "serde_json",
  "tokio",
 ]
 
