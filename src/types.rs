@@ -1,7 +1,9 @@
 use std::fmt;
 
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
+#[derive(Debug, PartialEq, Eq, Hash)]
 pub enum BoardgameSite {
     Spelonk,
     ThePlayground,
@@ -18,12 +20,13 @@ impl fmt::Display for BoardgameSite {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Message {
-    pub msg_type: String,
+pub struct ProductUpdateInfo {
+    pub product_id: Uuid,
+    pub product_url: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct DiscoverMessage {
-    pub msg_type: String,
-    pub foo: String,
+pub enum Message {
+    Discover(),
+    Update(ProductUpdateInfo),
 }

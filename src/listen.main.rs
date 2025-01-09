@@ -1,21 +1,37 @@
+#![feature(type_alias_impl_trait)]
+mod handlers;
 mod mq;
 mod types;
 
-use std::{thread::sleep, time::Duration};
+use std::thread::sleep;
+use std::time::Duration;
 
 use lapin::options::BasicAckOptions;
 use mq::{ensure_exchange, ensure_queue, get_connection};
-use serde::{Deserialize, Serialize};
+use rand::random;
 use tokio;
-use types::{BoardgameSite, DiscoverMessage, Message};
+use types::{BoardgameSite, Message};
+
+async fn handle_message(site: &BoardgameSite, message: &Message) {
+    match site {
+        BoardgameSite::Spelonk => handlers::spelonk::handle(message).await,
+        BoardgameSite::ThePlayground => handlers::the_playground::handle(message).await,
+    };
+}
 
 #[tokio::main]
 async fn main() -> Result<(), lapin::Error> {
-    let site = BoardgameSite::Spelonk;
+    let site = if random::<f32>() > 0.5 {
+        BoardgameSite::Spelonk
+    } else {
+        BoardgameSite::ThePlayground
+    };
     let conn = get_connection().await?;
     let channel = conn.create_channel().await?;
     ensure_exchange(&channel).await?;
     ensure_queue(&channel, &site).await?;
+
+    println!("Listening for site {:?}", site);
 
     loop {
         let msg = channel
@@ -28,11 +44,8 @@ async fn main() -> Result<(), lapin::Error> {
         if let Some(msg) = msg {
             let message: Message =
                 serde_json::from_slice(&msg.data).expect("Deserialization failed");
-            let discover_message: DiscoverMessage =
-                serde_json::from_slice(&msg.data).expect("Deserialization failed");
 
-            println!("Message: {:?}", message);
-            println!("Discover message: {:?}", discover_message);
+            handle_message(&site, &message).await;
 
             channel
                 .basic_ack(msg.delivery_tag, BasicAckOptions::default())

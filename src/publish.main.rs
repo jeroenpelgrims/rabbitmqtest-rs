@@ -1,10 +1,11 @@
 mod mq;
 mod types;
 
-use lapin::{options::BasicPublishOptions, BasicProperties};
+use lapin::options::BasicPublishOptions;
+use lapin::BasicProperties;
 use mq::{ensure_exchange, ensure_queue, get_connection, EXCHANGE};
 use tokio;
-use types::{BoardgameSite, DiscoverMessage};
+use types::{BoardgameSite, Message, ProductUpdateInfo};
 
 #[tokio::main]
 async fn main() -> Result<(), lapin::Error> {
@@ -14,17 +15,17 @@ async fn main() -> Result<(), lapin::Error> {
     ensure_queue(&channel, &BoardgameSite::Spelonk).await?;
     ensure_queue(&channel, &BoardgameSite::ThePlayground).await?;
 
-    let message = DiscoverMessage {
-        msg_type: "discover".to_string(),
-        foo: "bar".to_string(),
-    };
+    let message = Message::Update(ProductUpdateInfo {
+        product_id: uuid::Uuid::new_v4(),
+        product_url: "http://google.com/product.html".to_string(),
+    });
+    // let message = Message::Discover();
     let payload = serde_json::to_vec(&message).unwrap();
 
-    // let payload = br##"{"type":"discover", "foo": "bar"}"##;
     channel
         .basic_publish(
             EXCHANGE,
-            &BoardgameSite::Spelonk.to_string(),
+            &BoardgameSite::ThePlayground.to_string(),
             BasicPublishOptions::default(),
             &payload,
             BasicProperties::default(),
