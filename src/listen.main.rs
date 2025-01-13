@@ -13,19 +13,13 @@ use tokio;
 use types::{BoardgameSite, Message};
 
 async fn handle_message(site: &BoardgameSite, message: &Message) {
-    match site {
+    let _result = match site {
         BoardgameSite::Spelonk => handlers::spelonk::handle(message).await,
-        BoardgameSite::ThePlayground => handlers::the_playground::handle(message).await,
+        BoardgameSite::ThePlayground => todo!(),
     };
 }
 
-#[tokio::main]
-async fn main() -> Result<(), lapin::Error> {
-    let site = if random::<f32>() > 0.5 {
-        BoardgameSite::Spelonk
-    } else {
-        BoardgameSite::ThePlayground
-    };
+async fn listen_for_site(site: &BoardgameSite) -> Result<(), lapin::Error> {
     let conn = get_connection().await?;
     let channel = conn.create_channel().await?;
     ensure_exchange(&channel).await?;
@@ -54,4 +48,15 @@ async fn main() -> Result<(), lapin::Error> {
             sleep(Duration::from_secs(1));
         }
     }
+}
+
+#[tokio::main]
+async fn main() -> Result<(), lapin::Error> {
+    let site = if random::<f32>() > 0.5 {
+        BoardgameSite::Spelonk
+    } else {
+        BoardgameSite::ThePlayground
+    };
+
+    listen_for_site(&site).await
 }
