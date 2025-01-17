@@ -8,14 +8,22 @@ name = "listen"
 path = "src/listen.main.rs"
 
 [[bin]]
+name = "temp"
+path = "src/temp.rs"
+
+[[bin]]
 name = "publish"
 path = "src/publish.main.rs"
 
 
 [dependencies]
+async-trait = "0.1.85"
+governor = "0.8.0"
 lapin = "2.5.0"
 rand = "0.8.5"
+reqwest = "0.12.12"
 serde = { version = "1.0.217", features = ["derive"] }
 serde_json = "1.0.135"
 tokio = {version="1.42.0", features=["full"]}
 uuid = {version="1.11.0", features=["serde", "v4"]}
+

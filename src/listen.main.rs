@@ -1,6 +1,6 @@
 #![feature(type_alias_impl_trait)]
-mod handlers;
 mod mq;
+mod scrapers;
 mod types;
 
 use std::thread::sleep;
@@ -14,7 +14,7 @@ use types::{BoardgameSite, Message};
 
 async fn handle_message(site: &BoardgameSite, message: &Message) {
     let _result = match site {
-        BoardgameSite::Spelonk => handlers::spelonk::handle(message).await,
+        BoardgameSite::Spelonk => scrapers::spelonk::handle(message).await,
         BoardgameSite::ThePlayground => todo!(),
     };
 }
