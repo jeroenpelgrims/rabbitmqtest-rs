@@ -1,9 +1,15 @@
-use crate::types::Message;
+use async_trait::async_trait;
 
-pub async fn handle(message: &Message) {
-    println!("listen the playground");
-    match message {
-        Message::Discover() => println!("Discover"),
-        Message::Update(info) => println!("Update {:?}", info),
+use super::Scraper;
+use crate::types::ProductUpdateInfo;
+
+pub struct ThePlaygroundScraper {}
+
+#[async_trait]
+impl Scraper for ThePlaygroundScraper {
+    async fn discover(&self) {}
+
+    async fn update(&self, product_info: &ProductUpdateInfo) {
+        todo!()
     }
 }

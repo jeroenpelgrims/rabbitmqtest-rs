@@ -1,11 +1,24 @@
-use super::ScraperError;
-use crate::types::Message;
+use async_trait::async_trait;
+
+use super::Scraper;
 mod discover;
 mod update;
+use crate::types::ProductUpdateInfo;
+use crate::util::RateLimitedClient;
 
-pub async fn handle(message: &Message) -> Result<(), ScraperError> {
-    match message {
-        Message::Discover() => discover::discover().await,
-        Message::Update(info) => update::update(info).await,
+pub struct SpelonkScraper {
+    pub client: RateLimitedClient,
+}
+
+#[async_trait]
+impl Scraper for SpelonkScraper {
+    async fn discover(&self) {
+        let response = self.client.get("https://jeroenpelgrims.com").await.unwrap();
+        let text = response.text().await.unwrap();
+        println!("{}", text);
+    }
+
+    async fn update(&self, product_info: &ProductUpdateInfo) {
+        println!("Updating data for spelonk, {:?}", product_info);
     }
 }

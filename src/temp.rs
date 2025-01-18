@@ -1,20 +1,16 @@
 use std::time::Duration;
 
 use async_trait::async_trait;
-mod util;
-use util::RateLimitedClient;
+
+// mod scrapers;
+// mod types;
+// use scrapers::Scraper;
+// use types::ProductUpdateInfo;
 
 // Enum to represent different websites
 enum Website {
     SiteA,
     SiteB,
-}
-
-// Trait to define scraping behavior
-#[async_trait]
-trait Scraper {
-    async fn discover(&self);
-    async fn update(&self);
 }
 
 // Struct for Website A
@@ -32,7 +28,7 @@ impl Scraper for SiteAScraper {
         // Add async discovery logic for Site A
     }
 
-    async fn update(&self) {
+    async fn update(&self, foo: &ProductUpdateInfo) {
         println!("Updating data for Site A");
         // Add async update logic for Site A
     }
@@ -48,7 +44,7 @@ impl Scraper for SiteBScraper {
         // Add async discovery logic for Site B
     }
 
-    async fn update(&self) {
+    async fn update(&self, foo: &ProductUpdateInfo) {
         println!("Updating data for Site B");
         // Add async update logic for Site B
     }
@@ -64,15 +60,9 @@ fn get_scraper(website: Website) -> Box<dyn Scraper + Send + Sync> {
 
 #[tokio::main]
 async fn main() {
-    // Example: Enum value received for the website
     let website = Website::SiteA;
 
-    // Get the appropriate scraper implementation
     let scraper = get_scraper(website);
 
-    // Call discover or update as needed
     scraper.discover().await;
-    scraper.update().await;
-
-    let client = RateLimitedClient::new(Duration::from_secs(3));
 }

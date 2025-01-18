@@ -25,7 +25,7 @@ async fn main() -> Result<(), lapin::Error> {
     channel
         .basic_publish(
             EXCHANGE,
-            &BoardgameSite::ThePlayground.to_string(),
+            &BoardgameSite::Spelonk.to_string(),
             BasicPublishOptions::default(),
             &payload,
             BasicProperties::default(),
